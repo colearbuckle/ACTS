@@ -19,7 +19,7 @@ The commands are fairly simple:
 
   - NOTE: ACTS1&2 are cycled every 5 seconds, and during a period where either cannot transmit, commands and messages are queued.
 
-  - NOTIFY22222222222FROM33333333333MSG(message contents)D is for notifying the MS of an incoming SMS, where the first number is the recipient, and the second is the sender.
+  - "NOTIFY22222222222FROM33333333333MSG(message contents)D" is for notifying the MS of an incoming SMS, where the first number is the recipient, and the second is the sender.
 
   - "REG22222222222D" is used to register the MS, and tell the SMSC exactly which BTS the MS is closest to, the 22222222222 is the number of the registering MS, and the D means the command is done and completed.
 
