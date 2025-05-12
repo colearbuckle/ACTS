@@ -1,4 +1,34 @@
 # ACTS
+
+ACTS (Analog Cellular Telecommunications System) is an open source project/protocol which aims to create a 1G/2G inspired cellular phone network. The system is limited to calls only, not unlike actual 1G back in the 1980s. Because of the frequencies and hardware, this system is unfortunately only legal with ham radio frequencies, requiring cell tower (base station) owners, and mobile phone users, to require a ham license.
+
+Below is just an overview, and by no means instructions. I will likely produce some documentation and walkthroughs to intruct people on how to setup such a system. This is mainly just so that you can wrap your head around how this system operates, for a better understanding.
+
+Key Words:
+
+  - "BTS" Base Transceiver Station (cell tower)
+  - "MS" Mobile Station (cell phone)
+  - "MSC" Mobile Switching Center (routes calls between BTSs and MSs)
+
+Before we start the explaination, the system uses DTMF tones for very basic signalling and control, because it is much simpler to interface with compared to something like FSK. FSK chips can be had fairly easily, but I have never messed with them before so I saw this as a safer option. Registeration happens with DTMF commands, calling happens with DTMF commands, and even the ring signal is sent via DTMF on the control channel.
+
+There are a few options with this project. The MSC part is a piece of windows software that hosts a TCP server for the BTSs to connect to. This allows people to start their own cellular carrier, by hosting an MSC and then building your own BTSs for the network, or letting other peoples BTSs to be used on your network.
+
+The actual BTS consists of an Ethernet to Serial converter box, which should be configured to connect to the IP and port of the desired MSC server. This box should then be connected to an Arduino Uno via an RS-232 to TTL converter. The Arduino should run the sketch provided. The Arduino will need to connect to an MT8870 DTMF module, for decoding the incoming DTMF commands, and the Arduino will also produce DTMF commands, so refer to the pinout provided.
+
+That is roughly how the control side of the network works, but I may add an option for an artificial BTS that connects to the MSC, that acts as a PSTN gateway via something like SIP or VoIP.
+
+The radio side is fairly simple in principle, but can get a bit confusing. All you need to know is that there are 3 groups of reuse frequencies, because if 3 cell towers were to overlap, they wouldn't interfere with each other. In theory, there could be any amount of voice channels, and also control channels, but for simplicity I will only have 1 control channel (3 if you count the fact that there are reuse frequencies). The control box (with the arduino etc) should ideally be enclosed in a box, with ports on it for power, serial, and audio in and out. The whole radio system could be simply built of DIY ham radio repeaters consisting of 2 Baofeng UV-5R radios connected together with VOX, per voice channel. The control channel is a bit different, and the arduino audio output should be connected to the audio input of a radio (e.g. Baofeng) with VOX enabled. Then there should be another radio with it's output connected to the DTMF decoder input.
+
+The radio channels have different frequencies for transmit and receive, much like a ham radio repeater with an offset. This makes cell towers necessary, and reduces interference from other phones and base stations etc. Frequencies have not really been decided yet, because I don't really know what frequencies are appropriate for such a system.
+
+You are probably wondering what phones I am going to use, which is a valid question becuase there aren't really any new off the shelf analog cell phones being produced anymore, and all of the original phones are collectors items and shouldn't be used. This is what influenced me to produce my own cellular analog protocol. There are around 3 main options for phones, mainly just a plain Baofeng UV-5R radio, a UV-5R with a ringer pack, and finally a custom built phone. The first option, just a UV-5R type device, is a good option because it is plug and play and fiarly simple, but it requires manual registration via typing the DTMF commands on the keypad, and it cannot ring becuase it doesn't have hardware for decoding DTMF commands. It's also a pain to make a call, becuase its not just as simple as dialling the desired phone number. To make a call, you have to type the whole command, including your phone number, before you can amke a call, and any error may result in an undesired outcome. The second option is a bit better, because it consists of a seperate box strapped to the radio, which inludes an arduino, DTMF decoder, and maybe a buzzer or speaker. This box connects to the radio's audio output, when a call isn't happening and the phone is just idle, and it detcts the DTMF ringer command for the phone which tells it to ring. This box could also register the phone with the network as well, but making calls wouldn't be possible becuase of the lack of a keypad etc. The third option is to build a phone from scratch, using an arduino, display (maybe those Nokia 5110 screens), keypad, and a DTMF decoder and finally an SA818 radio module. This would be a completely custom built phone that can register, receive, and make calls without any manual intervention. This is the ideal route, but may not be suitable for everyone.
+
+Just a note: the cell tower control channels aren't always on (to stop damage to the UV-5Rs etc) and are VOX controlled, which could make custom phones displaying cell service signal quite difficult. Now, I may add a feature to the system so that every 5 seconds or so, the Arduino can transmit an inaudable tone that activates the radio and then the phone can read the RCCI of the transmittion, and display it on the screen until a new one is heard. This provides the illusion, the working functionality, of a real signal meter.
+
+Old README
+<---------->
+
 ACTS (Analog Cellular Telecommunications System) is an open source project/protocol which aims to create a 1G/2G inspired cellular phone network. Currently this is an SMS only system, but in the future the project may expand to voice calls as well, likely analog FM to keep the 1G inspiration.
 
 Key Words:
