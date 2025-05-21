@@ -2,7 +2,7 @@
 
 ACTS (Analog Cellular Telecommunications System) is an open source project/protocol which aims to create a 1G/2G inspired cellular phone network. The system is limited to calls only, not unlike actual 1G back in the 1980s. Because of the frequencies and hardware, this system is unfortunately only legal with ham radio frequencies, requiring cell tower (base station) owners, and mobile phone users, to require a ham license.
 
-Below is just an overview, and by no means instructions. I will likely produce some documentation and walkthroughs to intruct people on how to setup such a system. This is mainly just so that you can wrap your head around how this system operates, for a better understanding.
+Below is just an overview, and by no means instructions. I will likely produce some documentation and walkthroughs to instruct people on how to setup such a system. This is mainly just so that you can wrap your head around how this system operates, for a better understanding.
 
 Key Words:
 
@@ -10,6 +10,29 @@ Key Words:
   - "MS" Mobile Station (cell phone)
   - "MSC" Mobile Switching Center (routes calls between BTSs and MSs)
 
+This system is more of a redesigned version of cellular communications, because of some of the limitations I am forced to work through. With that being said, if my way of cellular communication was actually introduced as the standard back in the 1980s, I could realistically see that happening.
+
+The system is quite straightforward, but explaining it is quite challenging so please bare with me!
+
+A quick overview:
+  - The MSC is essentially a VoIP PBX
+  - The BTSs are softphones connected to two radios (TX & RX)
+  - The MS are ham radios with DTMF dial pads, but also ringer modules
+
+How an outbound call is made:
+
+A person on the regular PSTN has to call their local access phone number (in actuallity there will probably be just one number) which will connect them to an IVR. The IVR asks the user to enter the Cell Tower ID number that the desired user is in range of (one of the limitations) and then if it is not occupied (one call per tower) then the MSC will transfer them to the tower. The tower's softphone is set to auto answer, and its audio input and output are set to two radios (one for TX & one for RX). When the caller is patched through to the tower, they are live on the whole frequency, and can hear it too. The users must have their radios (cell phones) hooked up to the ringer module, which is a custom made device that has a DTMF module and an arduino etc, and listens on the channel for it's own phone number to be transmitted, and then it will page the user. Now that the caller is live on the frequency, they can then use their phone's DTMF dial pad to type out the phone number of the desired ACTS phone user, and that will be sent live over the tower. If the number matches, the ringer box rings and then the user can unplug the ringer module and talk over the radio (cell phone). Now, anyone with a cell phone can talk and listen to the conversation, so this isn't good for serious private calls, but it is fun!
+
+How an inbound call is made:
+
+An inbound call is placed by the user. They can turn on their phone, and listen to make sure no one is already on a call (this is part of the required ettiquite), and then they can dial the phone number using the keypad, followed by a #, a DTMF tone of A, and another #, and this tells the tower to dial the number. There is a box at the tower that receives DTMF using a DTMF module and an Arduino UNO. This is connected to a custom Windows application I made, over serial, that takes the DTMF commands and emulates a keyboard in order to control the softphone application (I am using MicroSip). The call goes through the PBX and out of one of the shared phone numbers. The user can hang up by typing D# on the keypad.
+
+The MSC:
+
+The MSC is a VoIP PBX, which could be anything. I am using FreePBX running on a Raspberry Pi 4, but you could use 3CX etc. When I get all of the software and material onto GitHub, I will provide audio files for you to use for the IVR etc. For every cell tower connected, they must have a unique extension on the PBX, which will become the tower's Cell ID.
+
+Newer Old README
+<---------------->
 Before we start the explaination, the system uses DTMF tones for very basic signalling and control, because it is much simpler to interface with compared to something like FSK. FSK chips can be had fairly easily, but I have never messed with them before so I saw this as a safer option. Registeration happens with DTMF commands, calling happens with DTMF commands, and even the ring signal is sent via DTMF on the control channel.
 
 There are a few options with this project. The MSC part is a piece of windows software that hosts a TCP server for the BTSs to connect to. This allows people to start their own cellular carrier, by hosting an MSC and then building your own BTSs for the network, or letting other peoples BTSs to be used on your network.
